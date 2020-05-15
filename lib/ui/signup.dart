@@ -15,6 +15,10 @@ class _SignUpState extends State<SignUp> {
   TextEditingController _emailController;
   TextEditingController _passwordController;
   //TextEditingController _confirmPasswordController;
+  final FocusNode emailField = FocusNode();
+  final FocusNode passwordField = FocusNode();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   String gender;
   String groupValue = "male";
   bool hidePass = true;
@@ -67,12 +71,15 @@ class _SignUpState extends State<SignUp> {
                       elevation: 0.0,
                       child: Padding(
                         padding: const EdgeInsets.only(left: 12.0),
-                        child: TextField(
+                        child: TextFormField(
                           controller: _nameController,
                           decoration: InputDecoration(
                             hintText: "Enter Full Name",
                             icon: Icon(Icons.person_add),
                           ),
+                          onEditingComplete: (){
+                            FocusScope.of(context).requestFocus(emailField);
+                          },
                         ),
                       ),
                     ),
@@ -124,12 +131,16 @@ class _SignUpState extends State<SignUp> {
                       elevation: 0.0,
                       child: Padding(
                         padding: const EdgeInsets.only(left: 12.0),
-                        child: TextField(
+                        child: TextFormField(
+                          focusNode: emailField,
                           controller: _emailController,
                           decoration: InputDecoration(
                             hintText: "Enter Email",
                             icon: Icon(Icons.alternate_email),
                           ),
+                          onEditingComplete: (){
+                            FocusScope.of(context).requestFocus(passwordField);
+                          },
                         ),
                       ),
                     ),
@@ -142,7 +153,8 @@ class _SignUpState extends State<SignUp> {
                         elevation: 0.0,
                         child: Padding(
                           padding: const EdgeInsets.only(left: 12.0),
-                          child: TextField(
+                          child: TextFormField(
+                            focusNode: passwordField,
                             controller: _passwordController,
                             obscureText: true,
                             decoration: InputDecoration(
@@ -186,8 +198,17 @@ class _SignUpState extends State<SignUp> {
                               fontWeight: FontWeight.bold,
                               fontSize: 20.0),
                         ),
-                        onPressed: () {
-                          validateForm();
+                        onPressed: () async{
+                          if (_emailController.text.isEmpty ||
+                              _passwordController.text.isEmpty) {
+                            print("Email and Password cannot be empty");
+                            return;
+                          }
+                          bool res = await AuthProvider().signUpWithEmail(_emailController.text, _passwordController.text);
+                          print(res);
+                          if (!res) {
+                            print("User Registration Failed");
+                          }
                         },
                           /*if (_emailController.text.isEmpty ||
                                   _passwordController.text.isEmpty) {
@@ -281,9 +302,5 @@ class _SignUpState extends State<SignUp> {
         gender = e;
       }
     });
-  }
-
-  void validateForm() async{
-
   }
 }

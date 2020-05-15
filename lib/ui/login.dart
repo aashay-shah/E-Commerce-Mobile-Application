@@ -4,6 +4,7 @@ import 'package:flutterfireauth/utils/firebase_auth.dart';
 import 'package:flutterfireauth/ui/signup.dart';
 
 class LoginPage extends StatefulWidget {
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -11,6 +12,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController _emailController;
   TextEditingController _passwordController;
+  final FocusNode passwordField = FocusNode();
 
   @override
   void initState() {
@@ -58,11 +60,15 @@ class _LoginPageState extends State<LoginPage> {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 12.0),
                         child: TextField(
+                          textInputAction: TextInputAction.next,
                           controller: _emailController,
                           decoration: InputDecoration(
                             hintText: "Enter Email",
                             icon: Icon(Icons.alternate_email),
                           ),
+                          onEditingComplete: (){
+                            FocusScope.of(context).requestFocus(passwordField);
+                          },
                         ),
                       ),
                     ),
@@ -76,6 +82,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: Padding(
                           padding: const EdgeInsets.only(left: 12.0),
                           child: TextField(
+                            focusNode: passwordField,
                             controller: _passwordController,
                             obscureText: true,
                             decoration: InputDecoration(
