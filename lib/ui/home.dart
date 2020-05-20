@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutterfireauth/utils/firebase_auth.dart';
 import 'package:carousel_pro/carousel_pro.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 // My Own Imports
 import 'package:flutterfireauth/components/horizontal_listview.dart';
 import 'package:flutterfireauth/components/products.dart';
 import 'package:flutterfireauth/ui/cart.dart';
+import 'package:flutterfireauth/ui/admin.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -13,6 +15,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     Widget image_carousel = new Container(
@@ -39,6 +42,7 @@ class _HomePageState extends State<HomePage> {
       ),
     );
     return Scaffold(
+      key: _key,
         appBar: AppBar(
           backgroundColor: Colors.pink,
           title: Text('Shopping App'),
@@ -59,7 +63,7 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[
 //            header
               new UserAccountsDrawerHeader(
-                accountName: Text('Aashay Shah'),
+                //accountName: Text('Aashay Shah'),
                 accountEmail: Text('aashay.shah@somaiya.edu'),
                 currentAccountPicture: GestureDetector(
                   child: new CircleAvatar(
@@ -70,6 +74,7 @@ class _HomePageState extends State<HomePage> {
                 decoration: new BoxDecoration(
                   color: Colors.pink,
                 ),
+
               ),
 //            body
               InkWell(
@@ -84,7 +89,7 @@ class _HomePageState extends State<HomePage> {
               InkWell(
                 onTap: () {},
                 child: ListTile(
-                    title: Text('Mu Account'),
+                    title: Text('My Account'),
                     leading: Icon(
                       Icons.person,
                       color: Colors.pink,
@@ -147,6 +152,24 @@ class _HomePageState extends State<HomePage> {
                       Icons.exit_to_app,
                     )),
               ),
+              InkWell(
+                onTap: () async{
+                  bool res = await AuthProvider().getCurrentUserEmail();
+                  if(!res){
+                    _key.currentState.showSnackBar(SnackBar(content: Text("You don't have permission!")));
+                  }
+                  else{
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => new Admin()));
+                  }
+                },
+                child: ListTile(
+                  title: Text('Admin'),
+                  leading: Icon(
+                    Icons.person_pin
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -175,7 +198,10 @@ class _HomePageState extends State<HomePage> {
               child: Products(),
             ),
           ],
-        ));
+        )
+
+    );
+
   }
 }
 

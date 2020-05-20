@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterfireauth/ui/login.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutterfireauth/ui/home.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:flutterfireauth/main.dart';
 import 'package:flutterfireauth/utils/firebase_auth.dart';
 
 class SignUp extends StatefulWidget {
@@ -208,6 +206,9 @@ class _SignUpState extends State<SignUp> {
                           print(res);
                           if (!res) {
                             print("User Registration Failed");
+                          }else{
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) => new MainScreen()));
                           }
                         },
                           /*if (_emailController.text.isEmpty ||

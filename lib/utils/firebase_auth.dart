@@ -3,6 +3,16 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthProvider {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  String userEmail;
+
+  Future<bool> getCurrentUserEmail() async {
+    //final user = await _auth.currentUser().then((value) => userEmail = value.email);
+    FirebaseUser user = await _auth.currentUser();
+    if(user.email == 'admin@admin.com')
+      return true;
+    else
+      return false;
+  }
 
   Future<bool> signInWithEmail(String email, String password) async{
     try {
