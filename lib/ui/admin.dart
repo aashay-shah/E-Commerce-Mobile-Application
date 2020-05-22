@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutterfireauth/db/category.dart';
+import 'package:flutterfireauth/db/brand.dart';
 
 enum Page { dashboard, manage }
 
@@ -14,6 +16,8 @@ class _AdminState extends State<Admin> {
   TextEditingController brandController = TextEditingController();
   GlobalKey<FormState> _categoryFormKey = GlobalKey();
   GlobalKey<FormState> _brandFormKey = GlobalKey();
+  BrandService _brandService = BrandService();
+  CategoryService _categoryService = CategoryService();
 
   //MaterialColor active = Colors.white;
   //MaterialColor notActive = Colors.grey;
@@ -328,7 +332,13 @@ class _AdminState extends State<Admin> {
       ),
       actions: <Widget>[
         FlatButton(
-            onPressed: () {},
+            onPressed: () {
+              if(categoryController.text != Null){
+                _categoryService.createCategory(categoryController.text);
+              }
+              _key.currentState.showSnackBar(SnackBar(content: Text("Category Added")));
+              Navigator.pop(context);
+            },
             child: Text('Add', style: TextStyle(color: Colors.pink),)),
         FlatButton(
             onPressed: () {
@@ -355,7 +365,13 @@ class _AdminState extends State<Admin> {
       ),
       actions: <Widget>[
         FlatButton(
-            onPressed: () {},
+            onPressed: () {
+              if(brandController.text != Null){
+                _brandService.createBrand(brandController.text);
+              }
+              _key.currentState.showSnackBar(SnackBar(content: Text("Brand Added")));
+              Navigator.pop(context);
+            },
             child: Text('Add', style: TextStyle(color: Colors.pink),)),
         FlatButton(
             onPressed: () {
