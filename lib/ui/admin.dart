@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterfireauth/db/category.dart';
 import 'package:flutterfireauth/db/brand.dart';
+import 'package:flutterfireauth/ui/add_product.dart';
 
 enum Page { dashboard, manage }
 
@@ -241,7 +242,10 @@ class _AdminState extends State<Admin> {
                 "Add Product",
                 style: TextStyle(color: Colors.black),
               ),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => new AddProduct()));
+              },
             ),
             Divider(),
             ListTile(
