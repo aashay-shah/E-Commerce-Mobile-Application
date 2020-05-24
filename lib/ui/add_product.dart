@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutterfireauth/db/brand.dart';
+import 'package:flutterfireauth/db/category.dart';
 
 class AddProduct extends StatefulWidget {
   @override
@@ -7,8 +9,38 @@ class AddProduct extends StatefulWidget {
 }
 
 class _AddProductState extends State<AddProduct> {
+  CategoryService _categoryService = CategoryService();
+  BrandService _brandService = BrandService();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController productNameController = TextEditingController();
+  List<DocumentSnapshot> Brands = <DocumentSnapshot>[];
+  List<DocumentSnapshot> Categories = <DocumentSnapshot>[];
+  List<DropdownMenuItem<String>> categoriesDropDown = <DropdownMenuItem<String>>[];
+  List<DropdownMenuItem<String>> brandsDropDown = <DropdownMenuItem<String>>[];
+  String _currentCategory;
+  String _currentBrand;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _getCategories();
+    //_getBrands();
+  }
+
+  List<DropdownMenuItem<String>> getCategoriesDropdown(){
+    List<DropdownMenuItem<String>> items = new List();
+    for (int i = 0; i < Categories.length; i++) {
+      setState(() {
+        items.insert(
+            0,
+            DropdownMenuItem(
+                child: Text(Categories[i].data['category']),
+                value: Categories[i].data['category']));
+      });
+    }
+    return items;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +52,7 @@ class _AddProductState extends State<AddProduct> {
       ),
       body: Form(
         key: _formKey,
-        child: ListView(
+        child: Column(
           children: <Widget>[
             Row(
               children: <Widget>[
@@ -67,36 +99,54 @@ class _AddProductState extends State<AddProduct> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text("Enter Product Name: ", style: TextStyle(color: Colors.pink, fontSize: 14.0),),
+              child: Text("Enter Product Details: ", style: TextStyle(color: Colors.pink, fontSize: 14.0),),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Material(
-                borderRadius: BorderRadius.circular(5.0),
-                color: Colors.redAccent.withOpacity(0.2),
-                elevation: 0.0,
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: TextFormField(
-                    controller: productNameController,
-                    decoration: InputDecoration(
-                      hintText: "Product Name",
-                    ),
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return 'Product Name Cannot Be Empty';
-                      }
-                      else if (value.length > 10){
-                        return 'Product Name cannot have more than 10 Characters';
-                      }
-                    },
-                  ),
+              padding: const EdgeInsets.all(12.0),
+              child: TextFormField(
+                controller: productNameController,
+                decoration: InputDecoration(
+                  hintText: "Product Name",
                 ),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Product Name Cannot Be Empty';
+                  }
+                  else if (value.length > 10){
+                    return 'Product Name cannot have more than 10 Characters';
+                  }
+                },
               ),
+            ),
+            Row(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("Category: ", style: TextStyle(color: Colors.pink, fontSize: 16.0),),
+                ),
+                DropdownButton(
+                  items: categoriesDropDown,
+                  onChanged: changeSelectedCategory,
+                  value: _currentCategory,
+                ),
+              ],
             ),
           ],
         ),
       ),
     );
+  }
+  _getCategories() async{
+    List<DocumentSnapshot> data = await _categoryService.getCategories();
+    print(data);
+    setState(() {
+      Categories = data;
+      categoriesDropDown = getCategoriesDropdown();
+      _currentCategory = Categories[0].data['category'];
+    });
+  }
+
+  changeSelectedCategory(String selectedCategory){
+    setState(() => _currentCategory = selectedCategory);
   }
 }
