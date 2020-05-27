@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutterfireauth/db/brand.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutterfireauth/db/category.dart';
+
 
 class AddProduct extends StatefulWidget {
   @override
@@ -21,6 +24,10 @@ class _AddProductState extends State<AddProduct> {
   String _currentCategory;
   String _currentBrand;
   List<String> selectedSizes = <String>[];
+  File _image1;
+  File _image2;
+  File _image3;
+
 
   @override
   void initState() {
@@ -78,12 +85,15 @@ class _AddProductState extends State<AddProduct> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: OutlineButton(
-                        onPressed: (){},
+                        onPressed: (){
+                          _selectImage(ImagePicker.pickImage(source: ImageSource.gallery), 1);
+                        },
                         borderSide: BorderSide(color: Colors.pink.withOpacity(0.5), width: 3.0),
-                        child: Padding(
+                        child: _displayChild1()
+                        /*Padding(
                           padding: const EdgeInsets.fromLTRB(14.0, 30.0, 14.0, 30.0),
                           child: Icon(Icons.add, color: Colors.pink,),
-                        ),
+                        ),*/
                       ),
                     ),
                   ),
@@ -91,12 +101,15 @@ class _AddProductState extends State<AddProduct> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: OutlineButton(
-                        onPressed: (){},
+                        onPressed: (){
+                          _selectImage(ImagePicker.pickImage(source: ImageSource.gallery), 2);
+                        },
                         borderSide: BorderSide(color: Colors.pink.withOpacity(0.5), width: 3.0),
-                        child: Padding(
+                        child: _displayChild2()
+                        /*Padding(
                           padding: const EdgeInsets.fromLTRB(14.0, 30.0, 14.0, 30.0),
                           child: Icon(Icons.add, color: Colors.pink,),
-                        ),
+                        ),*/
                       ),
                     ),
                   ),
@@ -104,12 +117,15 @@ class _AddProductState extends State<AddProduct> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: OutlineButton(
-                        onPressed: (){},
+                        onPressed: (){
+                          _selectImage(ImagePicker.pickImage(source: ImageSource.gallery), 3);
+                        },
                         borderSide: BorderSide(color: Colors.pink.withOpacity(0.5), width: 3.0),
-                        child: Padding(
+                        child: _displayChild3()
+                        /*Padding(
                           padding: const EdgeInsets.fromLTRB(14.0, 30.0, 14.0, 30.0),
                           child: Icon(Icons.add, color: Colors.pink,),
-                        ),
+                        ),*/
                       ),
                     ),
                   ),
@@ -287,4 +303,51 @@ class _AddProductState extends State<AddProduct> {
       });
     }
   }
+
+  _selectImage(Future<File> pickImage, int imageNumber) async{
+    File tempImg = await pickImage;
+    switch(imageNumber){
+      case 1:  setState(() => _image1 = tempImg);
+      break;
+      case 2:  setState(() => _image2 = tempImg);
+      break;
+      case 3:  setState(() => _image3 = tempImg);
+      break;
+    }
+  }
+
+  Widget _displayChild1() {
+    if(_image1 == null){
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(14, 70, 14, 70),
+        child: new Icon(Icons.add, color: Colors.pink,),
+      );
+    }else{
+      return Image.file(_image1, fit: BoxFit.fill, width: double.infinity,);
+    }
+  }
+
+  Widget _displayChild2() {
+    if(_image2 == null){
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(14, 70, 14, 70),
+        child: new Icon(Icons.add, color: Colors.pink,),
+      );
+    }else{
+      return Image.file(_image2, fit: BoxFit.fill, width: double.infinity,);
+    }
+  }
+
+  Widget _displayChild3() {
+    if(_image3 == null){
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(14, 70, 14, 70),
+        child: new Icon(Icons.add, color: Colors.pink,),
+      );
+    }else{
+      return Image.file(_image3, fit: BoxFit.fill, width: double.infinity,);
+    }
+  }
+
+  
 }
