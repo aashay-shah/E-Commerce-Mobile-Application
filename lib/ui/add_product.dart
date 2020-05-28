@@ -2,8 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutterfireauth/db/brand.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:flutterfireauth/db/category.dart';
+import 'package:flutterfireauth/db/product.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 
 class AddProduct extends StatefulWidget {
@@ -12,11 +15,14 @@ class AddProduct extends StatefulWidget {
 }
 
 class _AddProductState extends State<AddProduct> {
+  GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
   CategoryService _categoryService = CategoryService();
   BrandService _brandService = BrandService();
+  ProductService _productService= ProductService();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController productNameController = TextEditingController();
-  TextEditingController quatityController = TextEditingController();
+  TextEditingController quantityController = TextEditingController();
+  final priceController = TextEditingController();
   List<DocumentSnapshot> Brands = <DocumentSnapshot>[];
   List<DocumentSnapshot> Categories = <DocumentSnapshot>[];
   List<DropdownMenuItem<String>> categoriesDropDown = <DropdownMenuItem<String>>[];
@@ -27,6 +33,7 @@ class _AddProductState extends State<AddProduct> {
   File _image1;
   File _image2;
   File _image3;
+  bool isLoading = false;
 
 
   @override
@@ -68,6 +75,7 @@ class _AddProductState extends State<AddProduct> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _key,
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: Colors.pink,
@@ -77,7 +85,7 @@ class _AddProductState extends State<AddProduct> {
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
-          child: Column(
+          child: isLoading ? CircularProgressIndicator() : Column(
             children: <Widget>[
               Row(
                 children: <Widget>[
@@ -177,7 +185,7 @@ class _AddProductState extends State<AddProduct> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
-                  controller: quatityController,
+                  controller: quantityController,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     hintText: 'Quantity',
@@ -185,6 +193,22 @@ class _AddProductState extends State<AddProduct> {
                   validator: (value){
                     if(value.isEmpty){
                       return 'Quantity Cannot Be Empty';
+                    }
+                  },
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: priceController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: 'Price',
+                  ),
+                  validator: (value){
+                    if(value.isEmpty){
+                      return 'Price Cannot Be Empty';
                     }
                   },
                 ),
@@ -256,7 +280,9 @@ class _AddProductState extends State<AddProduct> {
                 color: Colors.pink,
                 textColor: Colors.white,
                 child: Text('Add Product'),
-                onPressed: (){},
+                onPressed: (){
+                  validateAndUpload();
+                },
               )
             ],
           ),
@@ -349,5 +375,50 @@ class _AddProductState extends State<AddProduct> {
     }
   }
 
-  
+  void validateAndUpload() async{
+    if(_formKey.currentState.validate()){
+      setState(() => isLoading = true);
+      if(_image1 != null && _image2 != null && _image3 != null){
+        if(selectedSizes.isNotEmpty){
+          String imageUrl1;
+          String imageUrl2;
+          String imageUrl3;
+          final FirebaseStorage storage = FirebaseStorage.instance;
+          final String picture1 = "1${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
+          StorageUploadTask task1 = storage.ref().child(picture1).putFile(_image1);
+          final String picture2 = "2${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
+          StorageUploadTask task2 = storage.ref().child(picture2).putFile(_image2);
+          final String picture3 = "3${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
+          StorageUploadTask task3 = storage.ref().child(picture3).putFile(_image3);
+          StorageTaskSnapshot snapshot1 = await task1.onComplete.then((snapshot)=> snapshot);
+          StorageTaskSnapshot snapshot2 = await task1.onComplete.then((snapshot)=> snapshot);
+          task3.onComplete.then((snapshot3) async{
+            imageUrl1 = await snapshot1.ref.getDownloadURL();
+            imageUrl2 = await snapshot2.ref.getDownloadURL();
+            imageUrl3 = await snapshot3.ref.getDownloadURL();
+            List<String> imageList = [imageUrl1, imageUrl2, imageUrl3];
+            _productService.uploadProduct(
+              productName: productNameController.text,
+              category: _currentCategory,
+              brand: _currentBrand,
+              quantity: int.parse(quantityController.text),
+              price: double.parse(priceController.text),
+              sizes: selectedSizes,
+              images: imageList
+            );
+            _formKey.currentState.reset();
+            setState(() => isLoading = false);
+            _key.currentState.showSnackBar(SnackBar(content: Text("Product Added")));
+            Navigator.pop(context);
+          });
+        }else{
+          setState(() => isLoading = false);
+          _key.currentState.showSnackBar(SnackBar(content: Text("Select atleast 1 Size")));
+        }
+      }else{
+        setState(() => isLoading = false);
+        _key.currentState.showSnackBar(SnackBar(content: Text("Provide all 3 Images")));
+    }
+    }
+  }
 }
