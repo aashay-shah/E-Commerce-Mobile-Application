@@ -8,7 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-
 class AddProduct extends StatefulWidget {
   @override
   _AddProductState createState() => _AddProductState();
@@ -18,23 +17,22 @@ class _AddProductState extends State<AddProduct> {
   GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
   CategoryService _categoryService = CategoryService();
   BrandService _brandService = BrandService();
-  ProductService _productService= ProductService();
+  ProductService _productService = ProductService();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController productNameController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
   final priceController = TextEditingController();
   List<DocumentSnapshot> Brands = <DocumentSnapshot>[];
   List<DocumentSnapshot> Categories = <DocumentSnapshot>[];
-  List<DropdownMenuItem<String>> categoriesDropDown = <DropdownMenuItem<String>>[];
+  List<DropdownMenuItem<String>> categoriesDropDown =
+      <DropdownMenuItem<String>>[];
   List<DropdownMenuItem<String>> brandsDropDown = <DropdownMenuItem<String>>[];
   String _currentCategory;
   String _currentBrand;
   List<String> selectedSizes = <String>[];
+  List<String> colors = <String>[];
   File _image1;
-  File _image2;
-  File _image3;
   bool isLoading = false;
-
 
   @override
   void initState() {
@@ -43,7 +41,7 @@ class _AddProductState extends State<AddProduct> {
     _getBrands();
   }
 
-  List<DropdownMenuItem<String>> getCategoriesDropdown(){
+  List<DropdownMenuItem<String>> getCategoriesDropdown() {
     List<DropdownMenuItem<String>> items = new List();
     for (int i = 0; i < Categories.length; i++) {
       setState(() {
@@ -57,7 +55,7 @@ class _AddProductState extends State<AddProduct> {
     return items;
   }
 
-  List<DropdownMenuItem<String>> getBrandsDropdown(){
+  List<DropdownMenuItem<String>> getBrandsDropdown() {
     List<DropdownMenuItem<String>> items = new List();
     for (int i = 0; i < Brands.length; i++) {
       setState(() {
@@ -71,7 +69,6 @@ class _AddProductState extends State<AddProduct> {
     return items;
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,33 +76,46 @@ class _AddProductState extends State<AddProduct> {
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: Colors.pink,
-        leading: Icon(Icons.close, color: Colors.white,),
-        title: Text("Add Product", style: TextStyle(color: Colors.white),),
+        leading: Icon(
+          Icons.close,
+          color: Colors.white,
+        ),
+        title: Text(
+          "Add Product",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
-          child: isLoading ? CircularProgressIndicator() : Column(
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: OutlineButton(
-                        onPressed: (){
-                          _selectImage(ImagePicker.pickImage(source: ImageSource.gallery), 1);
-                        },
-                        borderSide: BorderSide(color: Colors.pink.withOpacity(0.5), width: 3.0),
-                        child: _displayChild1()
-                        /*Padding(
+          child: isLoading
+              ? CircularProgressIndicator()
+              : Column(
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: OutlineButton(
+                                onPressed: () {
+                                  _selectImage(
+                                    ImagePicker.pickImage(
+                                        source: ImageSource.gallery),
+                                  );
+                                },
+                                borderSide: BorderSide(
+                                    color: Colors.pink.withOpacity(0.5),
+                                    width: 3.0),
+                                child: _displayChild1()
+                                /*Padding(
                           padding: const EdgeInsets.fromLTRB(14.0, 30.0, 14.0, 30.0),
                           child: Icon(Icons.add, color: Colors.pink,),
                         ),*/
-                      ),
-                    ),
-                  ),
-                  Expanded(
+                                ),
+                          ),
+                        ),
+                        /*Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: OutlineButton(
@@ -136,109 +146,125 @@ class _AddProductState extends State<AddProduct> {
                         ),*/
                       ),
                     ),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text("Enter Product Details: ", style: TextStyle(color: Colors.pink, fontSize: 14.0),),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: TextFormField(
-                  controller: productNameController,
-                  decoration: InputDecoration(
-                    hintText: "Product Name",
-                  ),
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Product Name Cannot Be Empty';
-                    }
-                    else if (value.length > 10){
-                      return 'Product Name cannot have more than 10 Characters';
-                    }
-                  },
-                ),
-              ),
-              Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text("Category: ", style: TextStyle(color: Colors.pink, fontSize: 12.0),),
-                  ),
-                  DropdownButton(
-                    items: categoriesDropDown,
-                    onChanged: changeSelectedCategory,
-                    value: _currentCategory,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text("Brand: ", style: TextStyle(color: Colors.pink, fontSize: 12.0),),
-                  ),
-                  DropdownButton(
-                    items: brandsDropDown,
-                    onChanged: changeSelectedBrand,
-                    value: _currentBrand,
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  controller: quantityController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    hintText: 'Quantity',
-                  ),
-                  validator: (value){
-                    if(value.isEmpty){
-                      return 'Quantity Cannot Be Empty';
-                    }
-                  },
-                ),
-              ),
+                  ),*/
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "Enter Product Details: ",
+                        style: TextStyle(color: Colors.pink, fontSize: 14.0),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: TextFormField(
+                        controller: productNameController,
+                        decoration: InputDecoration(
+                          hintText: "Product Name",
+                        ),
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Product Name Cannot Be Empty';
+                          } else if (value.length > 10) {
+                            return 'Product Name cannot have more than 10 Characters';
+                          }
+                        },
+                      ),
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "Category: ",
+                            style:
+                                TextStyle(color: Colors.pink, fontSize: 12.0),
+                          ),
+                        ),
+                        DropdownButton(
+                          items: categoriesDropDown,
+                          onChanged: changeSelectedCategory,
+                          value: _currentCategory,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "Brand: ",
+                            style:
+                                TextStyle(color: Colors.pink, fontSize: 12.0),
+                          ),
+                        ),
+                        DropdownButton(
+                          items: brandsDropDown,
+                          onChanged: changeSelectedBrand,
+                          value: _currentBrand,
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        controller: quantityController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: 'Quantity',
+                        ),
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Quantity Cannot Be Empty';
+                          }
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        controller: priceController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: 'Price',
+                        ),
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Price Cannot Be Empty';
+                          }
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Available Sizes',
+                        style: TextStyle(color: Colors.pink, fontSize: 16.0),
+                      ),
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Checkbox(
+                            value: selectedSizes.contains('XS'),
+                            onChanged: (value) => changeSelectedSize('XS')),
+                        Text('XS'),
+                        Checkbox(
+                            value: selectedSizes.contains('S'),
+                            onChanged: (value) => changeSelectedSize('S')),
+                        Text('S'),
+                        Checkbox(
+                            value: selectedSizes.contains('M'),
+                            onChanged: (value) => changeSelectedSize('M')),
+                        Text('M'),
+                        Checkbox(
+                            value: selectedSizes.contains('L'),
+                            onChanged: (value) => changeSelectedSize('L')),
+                        Text('L'),
+                        Checkbox(
+                            value: selectedSizes.contains('XL'),
+                            onChanged: (value) => changeSelectedSize('XL')),
+                        Text('XL'),
+                      ],
+                    ),
 
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  controller: priceController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    hintText: 'Price',
-                  ),
-                  validator: (value){
-                    if(value.isEmpty){
-                      return 'Price Cannot Be Empty';
-                    }
-                  },
-                ),
-              ),
-
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text('Available Sizes', style: TextStyle(color: Colors.pink, fontSize: 16.0),),
-              ),
-
-              Row(
-                children: <Widget>[
-                  Checkbox(value: selectedSizes.contains('XS'), onChanged: (value) => changeSelectedSize('XS')),
-                  Text('XS'),
-
-                  Checkbox(value: selectedSizes.contains('S'), onChanged: (value) => changeSelectedSize('S')),
-                  Text('S'),
-
-                  Checkbox(value: selectedSizes.contains('M'), onChanged: (value) => changeSelectedSize('M')),
-                  Text('M'),
-
-                  Checkbox(value: selectedSizes.contains('L'), onChanged: (value) => changeSelectedSize('L')),
-                  Text('L'),
-
-                  Checkbox(value: selectedSizes.contains('XL'), onChanged: (value) => changeSelectedSize('XL')),
-                  Text('XL'),
-                ],
-              ),
-
-              Row(
+                    /*Row(
                 children: <Widget>[
                   Checkbox(value: selectedSizes.contains('28'), onChanged: (value) => changeSelectedSize('28')),
                   Text('28'),
@@ -274,23 +300,24 @@ class _AddProductState extends State<AddProduct> {
                   Checkbox(value: selectedSizes.contains('48'), onChanged: (value) => changeSelectedSize('46')),
                   Text('46'),
                 ],
-              ),
+              ),*/
 
-              RaisedButton(
-                color: Colors.pink,
-                textColor: Colors.white,
-                child: Text('Add Product'),
-                onPressed: (){
-                  validateAndUpload();
-                },
-              )
-            ],
-          ),
+                    RaisedButton(
+                      color: Colors.pink,
+                      textColor: Colors.white,
+                      child: Text('Add Product'),
+                      onPressed: () {
+                        validateAndUpload();
+                      },
+                    )
+                  ],
+                ),
         ),
       ),
     );
   }
-  _getCategories() async{
+
+  _getCategories() async {
     List<DocumentSnapshot> data = await _categoryService.getCategories();
     print(data);
     setState(() {
@@ -300,7 +327,7 @@ class _AddProductState extends State<AddProduct> {
     });
   }
 
-  _getBrands() async{
+  _getBrands() async {
     List<DocumentSnapshot> data = await _brandService.getBrands();
     print(data);
     setState(() {
@@ -310,50 +337,50 @@ class _AddProductState extends State<AddProduct> {
     });
   }
 
-  changeSelectedCategory(String selectedCategory){
+  changeSelectedCategory(String selectedCategory) {
     setState(() => _currentCategory = selectedCategory);
   }
 
-  changeSelectedBrand(String selectedBrand){
+  changeSelectedBrand(String selectedBrand) {
     setState(() => _currentBrand = selectedBrand);
   }
 
   changeSelectedSize(String size) {
-    if(selectedSizes.contains(size)){
+    if (selectedSizes.contains(size)) {
       setState(() {
         selectedSizes.remove(size);
       });
-    }else{
+    } else {
       setState(() {
         selectedSizes.insert(0, size);
       });
     }
   }
 
-  _selectImage(Future<File> pickImage, int imageNumber) async{
+  void _selectImage(Future<File> pickImage) async {
     File tempImg = await pickImage;
-    switch(imageNumber){
-      case 1:  setState(() => _image1 = tempImg);
-      break;
-      case 2:  setState(() => _image2 = tempImg);
-      break;
-      case 3:  setState(() => _image3 = tempImg);
-      break;
-    }
+    setState(() => _image1 = tempImg);
   }
 
   Widget _displayChild1() {
-    if(_image1 == null){
+    if (_image1 == null) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(14, 70, 14, 70),
-        child: new Icon(Icons.add, color: Colors.pink,),
+        child: new Icon(
+          Icons.add,
+          color: Colors.pink,
+        ),
       );
-    }else{
-      return Image.file(_image1, fit: BoxFit.fill, width: double.infinity,);
+    } else {
+      return Image.file(
+        _image1,
+        fit: BoxFit.fill,
+        width: double.infinity,
+      );
     }
   }
 
-  Widget _displayChild2() {
+  /*Widget _displayChild2() {
     if(_image2 == null){
       return Padding(
         padding: const EdgeInsets.fromLTRB(14, 70, 14, 70),
@@ -373,52 +400,52 @@ class _AddProductState extends State<AddProduct> {
     }else{
       return Image.file(_image3, fit: BoxFit.fill, width: double.infinity,);
     }
-  }
+  }*/
 
-  void validateAndUpload() async{
-    if(_formKey.currentState.validate()){
+  void validateAndUpload() async {
+    if (_formKey.currentState.validate()) {
       setState(() => isLoading = true);
-      if(_image1 != null && _image2 != null && _image3 != null){
-        if(selectedSizes.isNotEmpty){
+      if (_image1 != null) {
+        if (selectedSizes.isNotEmpty) {
           String imageUrl1;
-          String imageUrl2;
-          String imageUrl3;
           final FirebaseStorage storage = FirebaseStorage.instance;
-          final String picture1 = "1${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
-          StorageUploadTask task1 = storage.ref().child(picture1).putFile(_image1);
-          final String picture2 = "2${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
+          final String picture1 =
+              "1${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
+          StorageUploadTask task1 =
+              storage.ref().child(picture1).putFile(_image1);
+          /*final String picture2 = "2${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
           StorageUploadTask task2 = storage.ref().child(picture2).putFile(_image2);
           final String picture3 = "3${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
-          StorageUploadTask task3 = storage.ref().child(picture3).putFile(_image3);
-          StorageTaskSnapshot snapshot1 = await task1.onComplete.then((snapshot)=> snapshot);
-          StorageTaskSnapshot snapshot2 = await task1.onComplete.then((snapshot)=> snapshot);
-          task3.onComplete.then((snapshot3) async{
+          StorageUploadTask task3 = storage.ref().child(picture3).putFile(_image3);*/
+          StorageTaskSnapshot snapshot1 =
+              await task1.onComplete.then((snapshot) => snapshot);
+          task1.onComplete.then((snapshot1) async {
             imageUrl1 = await snapshot1.ref.getDownloadURL();
-            imageUrl2 = await snapshot2.ref.getDownloadURL();
-            imageUrl3 = await snapshot3.ref.getDownloadURL();
-            List<String> imageList = [imageUrl1, imageUrl2, imageUrl3];
-            _productService.uploadProduct(
-              productName: productNameController.text,
-              category: _currentCategory,
-              brand: _currentBrand,
-              quantity: int.parse(quantityController.text),
-              price: double.parse(priceController.text),
-              sizes: selectedSizes,
-              images: imageList
-            );
+            _productService.uploadProduct({
+              "productName": productNameController.text,
+              "category": _currentCategory,
+              "brand": _currentBrand,
+              "quantity": int.parse(quantityController.text),
+              "price": double.parse(priceController.text),
+              "sizes": selectedSizes,
+              "images": imageUrl1,
+            });
             _formKey.currentState.reset();
             setState(() => isLoading = false);
-            _key.currentState.showSnackBar(SnackBar(content: Text("Product Added")));
+            _key.currentState
+                .showSnackBar(SnackBar(content: Text("Product Added")));
             Navigator.pop(context);
           });
-        }else{
+        } else {
           setState(() => isLoading = false);
-          _key.currentState.showSnackBar(SnackBar(content: Text("Select atleast 1 Size")));
+          _key.currentState
+              .showSnackBar(SnackBar(content: Text("Select atleast 1 Size")));
         }
-      }else{
+      } else {
         setState(() => isLoading = false);
-        _key.currentState.showSnackBar(SnackBar(content: Text("Provide all 3 Images")));
-    }
+        _key.currentState
+            .showSnackBar(SnackBar(content: Text("Provide an Image")));
+      }
     }
   }
 }

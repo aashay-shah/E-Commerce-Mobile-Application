@@ -6,16 +6,10 @@ import 'dart:convert';
 class ProductService{
   Firestore _firestore = Firestore.instance;
   String ref = 'Products';
-  void uploadProduct({String productName, String category, String brand, int quantity, double price, List sizes, List images}){
+  void uploadProduct(Map<String, dynamic> data){
     var id = Uuid();
     String productId = id.v1();
-    _firestore.collection(ref).document(productId).setData({
-      'id': productId,
-      'name': productName,
-      'category': category,
-      'brand': brand,
-      'quantity': quantity,
-      'price': price,
-    });
+    data["id"] = productId;
+    _firestore.collection(ref).document(productId).setData(data);
   }
 }
