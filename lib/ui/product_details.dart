@@ -236,7 +236,19 @@ class _ProductDetailsState extends State<ProductDetails> {
               new IconButton(
                   icon: Icon(Icons.favorite_border),
                   color: Colors.red,
-                  onPressed: () {}),
+                  onPressed: () {
+                    _productService.uploadToFavorites({
+                      "name": widget.product_detail_name,
+                      "price": widget.product_detail_new_price,
+                      "images": widget.product_detail_picture,
+                      "quantity": widget.product_detail_quantity.toString(),
+                      "category": widget.product_detail_category.toString(),
+                      "brand": widget.product_detail_brand.toString()
+                    }
+                    );
+                    _key.currentState
+                        .showSnackBar(SnackBar(content: Text("Product Added to Favorites")));
+                  }),
             ],
           ),
           Divider(),

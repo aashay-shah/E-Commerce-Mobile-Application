@@ -76,10 +76,6 @@ class _AddProductState extends State<AddProduct> {
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: Colors.pink,
-        leading: Icon(
-          Icons.close,
-          color: Colors.white,
-        ),
         title: Text(
           "Add Product",
           style: TextStyle(color: Colors.white),

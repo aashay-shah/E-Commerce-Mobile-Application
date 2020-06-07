@@ -8,6 +8,7 @@ import 'package:flutterfireauth/components/horizontal_listview.dart';
 import 'package:flutterfireauth/components/products.dart';
 import 'package:flutterfireauth/ui/checkout.dart';
 import 'package:flutterfireauth/ui/admin.dart';
+import 'package:flutterfireauth/ui/favorites.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -58,7 +59,10 @@ class _HomePageState extends State<HomePage> {
           actions: <Widget>[
             new IconButton(
                 icon: Icon(Icons.star, color: Colors.white),
-                onPressed: () {}),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => new Favorites()));
+                }),
             new IconButton(
                 icon: Icon(Icons.shopping_cart, color: Colors.white),
                 onPressed: () {
@@ -86,7 +90,10 @@ class _HomePageState extends State<HomePage> {
               ),
 //            body
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => new HomePage()));
+                },
                 child: ListTile(
                     title: Text('Home Page'),
                     leading: Icon(
@@ -125,7 +132,10 @@ class _HomePageState extends State<HomePage> {
                     )),
               ),
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => new Favorites()));
+                },
                 child: ListTile(
                     title: Text('Favorites'),
                     leading: Icon(
