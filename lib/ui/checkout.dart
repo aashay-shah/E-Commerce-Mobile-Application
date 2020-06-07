@@ -66,7 +66,12 @@ class _CheckoutState extends State<Checkout> {
                                   Icons.delete,
                                   color: Colors.pink,
                                 ),
-                                onPressed: null,
+                                onPressed: () async {
+                                  Firestore.instance
+                                      .collection('Cart')
+                                      .document(prod_id)
+                                      .delete();
+                                },
                               ))
                             ],
                           ),

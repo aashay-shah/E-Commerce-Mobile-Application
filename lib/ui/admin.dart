@@ -5,6 +5,7 @@ import 'package:flutterfireauth/ui/add_product.dart';
 import 'package:flutterfireauth/ui/brand_list.dart';
 import 'package:flutterfireauth/ui/category_list.dart';
 import 'package:flutterfireauth/ui/product_list.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum Page { dashboard, manage }
 
@@ -22,6 +23,16 @@ class _AdminState extends State<Admin> {
   GlobalKey<FormState> _brandFormKey = GlobalKey();
   BrandService _brandService = BrandService();
   CategoryService _categoryService = CategoryService();
+  int productcount = 0;
+  int categorycount = 0;
+  int brandcount = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    getInfo();
+    super.initState();
+  }
 
   //MaterialColor active = Colors.white;
   //MaterialColor notActive = Colors.grey;
@@ -101,15 +112,15 @@ class _AdminState extends State<Admin> {
                           title: FlatButton.icon(
                               onPressed: null,
                               icon: Icon(
-                                Icons.people_outline,
+                                Icons.library_books,
                                 color: Colors.pink,
                               ),
                               label: Text(
-                                "Users",
+                                "Brands",
                                 style: TextStyle(color: Colors.black),
                               )),
                           subtitle: Text(
-                            '7',
+                            brandcount.toString(),
                             textAlign: TextAlign.center,
                             style:
                                 TextStyle(color: Colors.pink, fontSize: 60.0),
@@ -132,7 +143,7 @@ class _AdminState extends State<Admin> {
                                     color: Colors.black, fontSize: 12.0),
                               )),
                           subtitle: Text(
-                            '23',
+                            categorycount.toString(),
                             textAlign: TextAlign.center,
                             style:
                                 TextStyle(color: Colors.pink, fontSize: 60.0),
@@ -154,7 +165,7 @@ class _AdminState extends State<Admin> {
                                 style: TextStyle(color: Colors.black),
                               )),
                           subtitle: Text(
-                            '120',
+                            productcount.toString(),
                             textAlign: TextAlign.center,
                             style:
                                 TextStyle(color: Colors.pink, fontSize: 60.0),
@@ -397,5 +408,28 @@ class _AdminState extends State<Admin> {
       ],
     );
     showDialog(context: context, builder: (_) => alert);
+  }
+
+  void getInfo() async {
+    var productinfo =
+        await Firestore.instance.collection('Products').getDocuments();
+    print(productinfo);
+    setState(() {
+      print(productinfo.documents.length);
+      productcount = productinfo.documents.length;
+    });
+    var categoryinfo =
+        await Firestore.instance.collection('Categories').getDocuments();
+    setState(() {
+      print(categoryinfo.documents.length);
+      categorycount = categoryinfo.documents.length;
+    });
+
+    var brandinfo =
+        await Firestore.instance.collection('Brands').getDocuments();
+    setState(() {
+      print(brandinfo.documents.length);
+      brandcount = brandinfo.documents.length;
+    });
   }
 }
