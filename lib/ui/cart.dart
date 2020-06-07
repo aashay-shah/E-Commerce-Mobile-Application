@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutterfireauth/ui/final_page.dart';
 import 'package:flutterfireauth/components/cart_products.dart';
 
 class Cart extends StatefulWidget {
@@ -32,7 +32,10 @@ class _CartState extends State<Cart> {
             ),
             Expanded(
               child: new MaterialButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => new FinalPage()));
+                },
                 child: new Text("Check Out",
                     style: TextStyle(color: Colors.white)),
                 color: Colors.pink,

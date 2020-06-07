@@ -27,7 +27,7 @@ class ProductList extends StatelessWidget {
               return ListTile(
                 leading: Image.network(product["images"]),
                 title: Text(product["productName"]),
-                //subtitle: (product["price"]),
+                subtitle: product["price"],
               );
             },
           );

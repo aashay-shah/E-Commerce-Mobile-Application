@@ -5,15 +5,19 @@ import 'package:flutterfireauth/ui/home.dart';
 class ProductDetails extends StatefulWidget {
   final product_detail_name;
   final product_detail_new_price;
-  final product_detail_old_price;
+  final product_detail_quantity;
   final product_detail_picture;
+  final product_detail_brand;
+  final product_detail_category;
+  final product_detail_id;
 
-  ProductDetails({
-    this.product_detail_name,
-    this.product_detail_picture,
+  ProductDetails({this.product_detail_name,
     this.product_detail_new_price,
-    this.product_detail_old_price,
-  });
+    this.product_detail_quantity,
+    this.product_detail_picture,
+    this.product_detail_brand,
+    this.product_detail_category,
+    this.product_detail_id});
 
   @override
   _ProductDetailsState createState() => _ProductDetailsState();
@@ -43,7 +47,7 @@ class _ProductDetailsState extends State<ProductDetails> {
             child: GridTile(
               child: Container(
                 color: Colors.white70,
-                child: Image.asset(widget.product_detail_picture),
+                child: Image.network(widget.product_detail_picture),
               ),
               footer: Container(
                 color: Colors.white70,
@@ -56,15 +60,14 @@ class _ProductDetailsState extends State<ProductDetails> {
                   title: new Row(
                     children: <Widget>[
                       Expanded(
-                        child: new Text("\$${widget.product_detail_old_price}",
+                        child: new Text("${widget.product_detail_quantity} Available",
                             style: TextStyle(
                               color: Colors.grey,
-                              decoration: TextDecoration.lineThrough,
                             )),
                       ),
                       Expanded(
                         child: new Text(
-                          "\$${widget.product_detail_new_price}",
+                          "Rs ${widget.product_detail_new_price}",
                           style: TextStyle(
                               fontWeight: FontWeight.bold, color: Colors.pink),
                         ),
@@ -86,8 +89,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                         context: context,
                         builder: (context) {
                           return new AlertDialog(
-                            title: new Text("Size"),
-                            content: new Text("Choose the Size"),
+                            title: new Text("Category"),
+                            content: new Text('Category : ${widget.product_detail_category}'),
                             actions: <Widget>[
                               new MaterialButton(
                                 onPressed: () {
@@ -106,13 +109,13 @@ class _ProductDetailsState extends State<ProductDetails> {
                     children: <Widget>[
                       Expanded(
                         child: new Text(
-                          'Size',
+                          'Category',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
-                      Expanded(
-                        child: new Icon(Icons.arrow_drop_down),
-                      ),
+//                      Expanded(
+//                        child: new Icon(Icons.arrow_drop_down),
+//                      ),
                     ],
                   ),
                 ),
@@ -125,8 +128,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                         context: context,
                         builder: (context) {
                           return new AlertDialog(
-                            title: new Text("Color"),
-                            content: new Text("Choose the Color"),
+                            title: new Text("Brand"),
+                            content: Text('Brand: ${widget.product_detail_brand}'),
                             actions: <Widget>[
                               new MaterialButton(
                                 onPressed: () {
@@ -145,13 +148,13 @@ class _ProductDetailsState extends State<ProductDetails> {
                     children: <Widget>[
                       Expanded(
                         child: new Text(
-                          'Color',
+                          'Brand',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
-                      Expanded(
-                        child: new Icon(Icons.arrow_drop_down),
-                      ),
+//                      Expanded(
+//                        child: new Icon(Icons.arrow_drop_down),
+//                      ),
                     ],
                   ),
                 ),
@@ -165,7 +168,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                         builder: (context) {
                           return new AlertDialog(
                             title: new Text("Quantity"),
-                            content: new Text("Choose the Quantity"),
+                            content: new Text('Available Quantity : ${widget.product_detail_quantity}'),
                             actions: <Widget>[
                               new MaterialButton(
                                 onPressed: () {
@@ -184,13 +187,13 @@ class _ProductDetailsState extends State<ProductDetails> {
                     children: <Widget>[
                       Expanded(
                         child: new Text(
-                          'Qty',
+                          'Quantity',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
-                      Expanded(
-                        child: new Icon(Icons.arrow_drop_down),
-                      ),
+//                      Expanded(
+//                        child: new Icon(Icons.arrow_drop_down),
+//                      ),
                     ],
                   ),
                 ),
@@ -263,7 +266,7 @@ class _ProductDetailsState extends State<ProductDetails> {
               ),
               Padding(
                 padding: EdgeInsets.all(5.0),
-                child: new Text("Brand XYZ"),
+                child: new Text(widget.product_detail_brand),
               ),
             ],
           ),
@@ -379,7 +382,7 @@ class Similar_single_prod extends StatelessWidget {
                     product_detail_name: prod_name,
                     product_detail_picture: prod_picture,
                     product_detail_new_price: prod_price,
-                    product_detail_old_price: prod_old_price,
+                    product_detail_quantity: prod_old_price,
                   ))),
               child: GridTile(
                   footer: Container(
@@ -394,7 +397,7 @@ class Similar_single_prod extends StatelessWidget {
                               )),
                           Expanded(
                               child: Text(
-                                "\$${prod_price}",
+                                "Rs ${prod_price}",
                                 style: TextStyle(
                                     color: Colors.pink,
                                     fontWeight: FontWeight.bold,

@@ -16,6 +16,15 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
+  String userEmail = "";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    getUserInfo();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget image_carousel = new Container(
@@ -42,7 +51,7 @@ class _HomePageState extends State<HomePage> {
       ),
     );
     return Scaffold(
-      key: _key,
+        key: _key,
         appBar: AppBar(
           backgroundColor: Colors.pink,
           title: Text('Shopping App'),
@@ -64,7 +73,7 @@ class _HomePageState extends State<HomePage> {
 //            header
               new UserAccountsDrawerHeader(
                 //accountName: Text('Aashay Shah'),
-                accountEmail: Text('aashay.shah@somaiya.edu'),
+                accountEmail: Text(userEmail),
                 currentAccountPicture: GestureDetector(
                   child: new CircleAvatar(
                     backgroundColor: Colors.grey,
@@ -74,7 +83,6 @@ class _HomePageState extends State<HomePage> {
                 decoration: new BoxDecoration(
                   color: Colors.pink,
                 ),
-
               ),
 //            body
               InkWell(
@@ -153,23 +161,32 @@ class _HomePageState extends State<HomePage> {
                     )),
               ),
               InkWell(
-                onTap: () async{
-                  bool res = await AuthProvider().getCurrentUserEmail();
-                  if(!res){
-                    _key.currentState.showSnackBar(SnackBar(content: Text("You don't have permission!")));
-                  }
-                  else{
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => new Admin()));
-                  }
-                },
-                child: ListTile(
-                  title: Text('Admin'),
-                  leading: Icon(
-                    Icons.person_pin
+                  onDoubleTap: () async {
+                    bool res = await AuthProvider().getCurrentUserEmail();
+                    if (!res) {
+                      _key.currentState.showSnackBar(SnackBar(
+                          content: Text("You don't have permission!")));
+                    } else {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => new Admin()));
+                    }
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Text("version 1.0"),
+                      )
+                    ],
+                  )
+//                ListTile(
+//                  title: Text('Admin'),
+//                  leading: Icon(
+//                    Icons.person_pin
+//                  ),
+//                ),
                   ),
-                ),
-              ),
             ],
           ),
         ),
@@ -182,7 +199,8 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(8.0),
               child: Container(
                   alignment: Alignment.centerLeft,
-                  child: new Text('Categories', style: TextStyle(fontWeight: FontWeight.bold))),
+                  child: new Text('Categories',
+                      style: TextStyle(fontWeight: FontWeight.bold))),
             ),
 
             HorizontalList(),
@@ -191,21 +209,26 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(8.0),
               child: Container(
                   alignment: Alignment.centerLeft,
-                  child: new Text('Recent Products', style: TextStyle(fontWeight: FontWeight.bold))),
+                  child: new Text('Recent Products',
+                      style: TextStyle(fontWeight: FontWeight.bold))),
             ),
 
             Flexible(
               child: Products(),
             ),
           ],
-        )
+        ));
+  }
 
-    );
-
+  getUserInfo() async{
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    FirebaseUser user = await _auth.currentUser();
+    setState(() {
+      userEmail = user.email;
+    });
+    print(userEmail);
   }
 }
-
-
 
 /*class HomePage extends StatelessWidget {
   @override
