@@ -9,6 +9,7 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
   TextEditingController _nameController;
   TextEditingController _emailController;
   TextEditingController _passwordController;
@@ -34,6 +35,7 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _key,
       body: Stack(
         children: <Widget>[
           Image.asset('images/register.jpg',
@@ -199,13 +201,15 @@ class _SignUpState extends State<SignUp> {
                         onPressed: () async{
                           if (_emailController.text.isEmpty ||
                               _passwordController.text.isEmpty) {
-                            print("Email and Password cannot be empty");
+                            _key.currentState
+                                .showSnackBar(SnackBar(content: Text("Email and Password cannot be Empty")));
                             return;
                           }
                           bool res = await AuthProvider().signUpWithEmail(_emailController.text, _passwordController.text);
                           print(res);
                           if (!res) {
-                            print("User Registration Failed");
+                            _key.currentState
+                                .showSnackBar(SnackBar(content: Text("User Registration Failed")));
                           }else{
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (context) => new MainScreen()));

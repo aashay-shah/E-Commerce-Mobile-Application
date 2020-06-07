@@ -10,6 +10,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
   TextEditingController _emailController;
   TextEditingController _passwordController;
   final FocusNode passwordField = FocusNode();
@@ -24,6 +25,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _key,
       body: Stack(
         children: <Widget>[
           Image.asset('images/back.jpg',
@@ -111,14 +113,16 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () async {
                           if (_emailController.text.isEmpty ||
                               _passwordController.text.isEmpty) {
-                            print("Email and Password cannot be empty");
+                            _key.currentState
+                                .showSnackBar(SnackBar(content: Text("Email and Password cannot be Empty")));
                             return;
                           }
                           bool res = await AuthProvider().signInWithEmail(
                               _emailController.text, _passwordController.text);
                           print(res);
                           if (!res) {
-                            print("Login failed");
+                            _key.currentState
+                                .showSnackBar(SnackBar(content: Text("Login Failed. Check your Login Credentials")));
                           }
                         },
                       ),
@@ -177,7 +181,8 @@ class _LoginPageState extends State<LoginPage> {
                       child: FlatButton(
                         onPressed: () async {
                           bool res = await AuthProvider().loginWithGoogle();
-                          if (!res) print("Error logging in with google");
+                          if (!res) _key.currentState
+                              .showSnackBar(SnackBar(content: Text("Google Authentication Failed. Try Again")));
                         },
                         child: Text(
                           "Sign In with Google",

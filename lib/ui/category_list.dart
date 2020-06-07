@@ -8,10 +8,6 @@ class CategoryList extends StatelessWidget {
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: Colors.pink,
-        leading: Icon(
-          Icons.close,
-          color: Colors.white,
-        ),
         title: Text(
           "Categories",
           style: TextStyle(color: Colors.white),
@@ -20,15 +16,20 @@ class CategoryList extends StatelessWidget {
       body: StreamBuilder(
         stream: Firestore.instance.collection("Categories").snapshots(),
         builder: (context, snapshot){
-          return ListView.builder(
-            itemCount: snapshot.data.documents.length,
-            itemBuilder: (context, index){
-              DocumentSnapshot category = snapshot.data.documents[index];
-              return ListTile(
-                title: Text(category["category"]),
-              );
-            },
-          );
+          if(snapshot.hasData) {
+            return ListView.builder(
+              itemCount: snapshot.data.documents.length,
+              itemBuilder: (context, index) {
+                DocumentSnapshot category = snapshot.data.documents[index];
+                return ListTile(
+                  title: Text(category["category"]),
+                );
+              },
+            );
+          }
+          else{
+            return CircularProgressIndicator();
+          }
         },
       ),
     );

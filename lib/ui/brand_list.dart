@@ -8,10 +8,6 @@ class BrandList extends StatelessWidget {
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: Colors.pink,
-        leading: Icon(
-          Icons.close,
-          color: Colors.white,
-        ),
         title: Text(
           "Brands",
           style: TextStyle(color: Colors.white),
@@ -20,15 +16,20 @@ class BrandList extends StatelessWidget {
       body: StreamBuilder(
         stream: Firestore.instance.collection("Brands").snapshots(),
         builder: (context, snapshot){
-          return ListView.builder(
-            itemCount: snapshot.data.documents.length,
-            itemBuilder: (context, index){
-              DocumentSnapshot brand = snapshot.data.documents[index];
-              return ListTile(
-                title: Text(brand["brand"]),
-              );
-            },
-          );
+          if(snapshot.hasData) {
+            return ListView.builder(
+              itemCount: snapshot.data.documents.length,
+              itemBuilder: (context, index) {
+                DocumentSnapshot brand = snapshot.data.documents[index];
+                return ListTile(
+                  title: Text(brand["brand"]),
+                );
+              },
+            );
+          }
+          else{
+            return CircularProgressIndicator();
+          }
         },
       ),
     );
