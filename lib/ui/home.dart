@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 // My Own Imports
 import 'package:flutterfireauth/components/horizontal_listview.dart';
 import 'package:flutterfireauth/components/products.dart';
-import 'package:flutterfireauth/ui/cart.dart';
+import 'package:flutterfireauth/ui/checkout.dart';
 import 'package:flutterfireauth/ui/admin.dart';
 
 class HomePage extends StatefulWidget {
@@ -57,13 +57,13 @@ class _HomePageState extends State<HomePage> {
           title: Text('Shopping App'),
           actions: <Widget>[
             new IconButton(
-                icon: Icon(Icons.search, color: Colors.white),
+                icon: Icon(Icons.star, color: Colors.white),
                 onPressed: () {}),
             new IconButton(
                 icon: Icon(Icons.shopping_cart, color: Colors.white),
                 onPressed: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => new Cart()));
+                      MaterialPageRoute(builder: (context) => new Checkout()));
                 })
           ],
         ),
@@ -115,7 +115,7 @@ class _HomePageState extends State<HomePage> {
               InkWell(
                 onTap: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => new Cart()));
+                      MaterialPageRoute(builder: (context) => new Checkout()));
                 },
                 child: ListTile(
                     title: Text('Shopping Cart'),

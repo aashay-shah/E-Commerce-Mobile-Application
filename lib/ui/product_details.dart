@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterfireauth/main.dart';
 import 'package:flutterfireauth/ui/home.dart';
+import 'package:flutterfireauth/db/product.dart';
 
 class ProductDetails extends StatefulWidget {
   final product_detail_name;
@@ -24,9 +25,12 @@ class ProductDetails extends StatefulWidget {
 }
 
 class _ProductDetailsState extends State<ProductDetails> {
+  GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
+  ProductService _productService = ProductService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _key,
       appBar: AppBar(
         backgroundColor: Colors.pink,
         title: InkWell(
@@ -206,7 +210,19 @@ class _ProductDetailsState extends State<ProductDetails> {
               // Size Button
               Expanded(
                 child: MaterialButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    _productService.uploadToCart({
+                        "name": widget.product_detail_name,
+                        "price": widget.product_detail_new_price,
+                        "images": widget.product_detail_picture,
+                        "quantity": int.parse('1'),
+                        "category": widget.product_detail_category.toString(),
+                        "brand": widget.product_detail_brand.toString()
+                    }
+                    );
+                    _key.currentState
+                        .showSnackBar(SnackBar(content: Text("Product Added to Cart")));
+                  },
                   color: Colors.pink,
                   textColor: Colors.white,
                   elevation: 0.2,
